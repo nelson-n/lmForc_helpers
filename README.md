@@ -45,50 +45,29 @@ turn the rest of these functions into a standalone R package.
 source("lmForc_subset.R")
 ```
 
-The Forecast class has a built in method for subsetting a single
+The Forecast class comes with a built in method for subsetting a single
 Forecast object. This subsetting method takes numeric or logical values
 and follows subsetting conventions that are present throughout the R
 language.
 
-``` r
-forc1_1h <- Forecast(
-  origin = as.Date(c("2010-02-17", "2010-05-14", "2010-07-22", "2010-12-05", "2011-03-10")),
-  future = as.Date(c("2010-06-30", "2010-09-30", "2010-12-31", "2011-03-31", "2011-06-30")),
-  forecast = c(4.27, 3.36, 4.78, 5.45, 5.12),
-  realized = c(4.96, 4.17, 4.26, 4.99, 5.38),
-  h_ahead = 1
-)
+`forc[2:4]` <br/> `forc[origin(forc1_1h) >= as.Date("2010-12-31")]`
 
-forc1_1h[2:4]
-#> h_ahead = 1 
-#> 
-#>       origin     future forecast realized
-#> 1 2010-05-14 2010-09-30     3.36     4.17
-#> 2 2010-07-22 2010-12-31     4.78     4.26
-#> 3 2010-12-05 2011-03-31     5.45     4.99
+However, one often ends up working with multiple Forecast objects.
+Examples include working with different model forecasts for the same
+forecast horizon, one model forecast for varying forecast horizons, or
+both. The lmForc convention for working with multiple Forecast objects
+is to put them into a list. The following functions provide a way to
+subset lists of Forecast objects by various conditions.
 
-forc1_1h[origin(forc1_1h) >= as.Date("2010-12-31")]
-#> h_ahead = 1 
-#> 
-#>       origin     future forecast realized
-#> 1 2011-03-10 2011-06-30     5.12     5.38
-```
-
-However, one often ends up working with multiple Forecast objects
-whether that be different model forecasts for the same forecast horizon,
-one model forecast for varying forecast horizons, or both. The lmForc
-convention for working with multiple Forecast objects is to put them
-into a list. The following subsetting functions provide a way to subset
-multiple Forecast objects by various conditions.
-
-### Subsetting Example Dataset
+#### Subsetting Example Dataset
 
 Examples of lmForc subsetting functions utilize the following stylized
-dataset. This example dataset contains two forecasts with one quarter
-ahead forecasts of the same variable. Note that both forecasts have
-identical `future`, `realized`, and `h_ahead` values, but that `origin`
-dates of the last two forecasts differ. These example forecasts can be
-thought of as two different model forecasts of the same variable.
+dataset. This example dataset contains one-quarter ahead forecasts
+produced by two different models, `forc1` and `forc2`. Note that both
+forecasts have identical `future`, `realized`, and `h_ahead` values, but
+that the `origin` dates of the last two forecasts differ. This becomes
+relevant when both forecast models are subset to identical `origin`
+values.
 
 ``` r
 forc1_1h <- Forecast(
@@ -111,9 +90,14 @@ forc2_1h <- Forecast(
 ## subset_forcs
 
 The simplest way to subset multiple Forecast objects is via the
-`subset_forcs()` function. The function takes a list of Forecast objects
-and a numeric or logical index. All forecasts in the list are subset by
-the whatever is passed to the `index` argument.
+`subset_forcs()` function. This function takes a list of Forecast
+objects and a numeric or logical index. All forecasts in the list are
+subset by the numerical or logical values that are passed to the `index`
+argument.
+
+For example, a list of Forecast objects can be subset by a
+condition:<br/>
+`subset_forcs(forcs, origin(forc1_1h) >= as.Date("2010-12-31"))`
 
 ``` r
 forcs <- list(forc1_1h, forc2_1h)
@@ -132,46 +116,24 @@ subset_forcs(forcs, 2:3)
 #>       origin     future forecast realized
 #> 1 2010-05-14 2010-09-30     3.89     4.17
 #> 2 2010-07-22 2010-12-31     3.31     4.26
- 
-subset_forcs(forcs, origin(forc1_1h) >= as.Date("2010-12-31"))
-#> [[1]]
-#> h_ahead = 1 
-#> 
-#>       origin     future forecast realized
-#> 1 2011-03-10 2011-06-30     5.12     5.38
-#> 
-#> [[2]]
-#> h_ahead = 1 
-#> 
-#>       origin     future forecast realized
-#> 1 2011-03-27 2011-06-30     4.61     5.38
 ```
 
 ## subset_bytime
 
-One may wish to compare forecasts over a specific time horizon. The
-`subset_bytime()` allows the user to subset multiple forecasts based on
-`origin` or `future` values. After choosing whether to subset by
-`origin` or `future` values and passing a single time object or a vector
-of time objects to the `values` argument, all forecasts in a list of
-Forecast objects are subset by `values`.
+One may want to compare forecasts over a specific time horizon. The
+`subset_bytime()` function allows the user to subset multiple forecasts
+based on `origin` or `future` values. After using the `slot` argument to
+choose whether to subset by `origin` or `future` values, the user passes
+a single time object or vector of time objects to the `values` argument.
+All forecasts in the list of Forecast objects are subset by `values`.
+
+For example, to see all of the forecasts that were made on a specific
+date:<br/>
+`subset_bytime(forcs, values = as.Date("2010-05-14"), slot = "origin")`
 
 ``` r
 forcs <- list(forc1_1h, forc2_1h)
  
-subset_bytime(forcs, values = as.Date("2010-05-14"), slot = "origin")
-#> [[1]]
-#> h_ahead = 1 
-#> 
-#>       origin     future forecast realized
-#> 1 2010-05-14 2010-09-30     3.36     4.17
-#> 
-#> [[2]]
-#> h_ahead = 1 
-#> 
-#>       origin     future forecast realized
-#> 1 2010-05-14 2010-09-30     3.89     4.17
-
 subset_bytime(
   forcs, 
   values = as.Date(c("2010-09-30", "2010-12-31", "2011-03-31")), 
@@ -236,31 +198,31 @@ source("lmForc_transform.R")
 Forecasts are often produced for multiple `h_ahead` horizons into the
 future. For example, a model may produce a 1-quarter ahead, 2-quarter
 ahead, 3-quarter ahead, and 4-quarter ahead forecast during each quarter
-of the year. In this example, a different Forecast object is needed to
-capture the forecasts made during each quarter. As per lmForc
-convention, one would work with these forecasts by putting them into a
-list.
-
-When working with forecasts for multiple `h_ahead` horizons into the
+of the year. In this example, multiple Forecast objects are needed to
+capture the forecast made during each quarter. As per lmForc convention,
+one would work with these forecasts by putting them into a list. When
+working with list of forecasts for multiple `h_ahead` horizons into the
 future, there are two general formats in which the forecasts can be
 organized. These two formats are: **Time Format** and **h_ahead
 Format**.
 
-### Time Format
+#### Time Format
 
 **Time Format** consists of a list of Forecast objects where each
 forecast has homogenous `origin` or `future` values. Each Forecast
 object in the list was made at the same time or contains forecasts for
 the same future time. However, the `h_ahead` forecast horizon differs
-within each Forecast object. **Time Format** is used to represent the
-case when a forecast with multiple `h_ahead` horizons is made at
-multiple `origin` times.
+within each Forecast object. **Time Format** is used to represent
+forecasts made at a single `origin` time for multiple `h_ahead`
+horizons.
 
 The following is an example of forecasts in **Time Format**. Each
 Forecast object represents a set of 1-quarter, 2-quarter, and 3-quarter
-ahead forecasts made during each quarter of 2010. Note that because each
-Forecast object contains forecasts for multiple `h_ahead` horizons,
-`h_ahead` is set to `NA`.
+ahead forecasts made at a single `origin` time during each quarter of
+2010. Note that because each Forecast object contains forecasts for
+multiple `h_ahead` horizons, `h_ahead` is set to `NA`. We place all of
+these forecasts into a list of Forecast objects that is in **Time
+Format** and assign it to `forcs_time_format`.
 
 ``` r
 forc1_t1 <- Forecast(
@@ -312,7 +274,9 @@ The following is an example of forecasts in **h_ahead Format**. Each
 Forecast object represents all of the 1-quarter, 2-quarter, and
 3-quarter ahead forecasts made during different quarters of 2010. Note
 that because each Forecast object has a homogenous `h_ahead` horizon we
-can now set `h_ahead` to the appropriate value.
+can now set `h_ahead` to the appropriate value. These forecasts are
+collected into a list of Forecast objects that is in **h_ahead Format**
+and assigned to `forcs_h_ahead_format`.
 
 ``` r
 forc1_1h <- Forecast(
@@ -344,13 +308,13 @@ forcs_h_ahead_format <- list(forc1_1h, forc1_2h, forc1_3h)
 
 ## convert_bytime
 
-Given a list of forecasts in **h_ahead Format** one may wish to convert
+Given a list of forecasts in **h_ahead Format**, one may want to convert
 one or multiple of these forecasts into **Time Format**. The function
-`convert_bytime()` take a list of Forecast objects in **h_ahead Format**
-and converts the forecasts made on the time specified by the `value` and
-`slot` arguments into Forecast objects in **Time Format**. Note that
-because we are converting to **Time Format**, the `h_ahead` value in
-each Forecast object is changed to `NA`.
+`convert_bytime()` takes a list of Forecast objects in **h_ahead
+Format** and converts the forecasts made on the time specified in the
+`value` and `slot` arguments into Forecast objects that are in **Time
+Format**. Note that because we are converting to **Time Format**, the
+`h_ahead` value in each Forecast object is changed to `NA`.
 
 ``` r
 convert_bytime(
@@ -424,10 +388,10 @@ transform_bytime(forcs_h_ahead_format, slot = "origin")
 
 Note that the output of `transform_bytime()` above is identical to the
 list of Forecast objects in `forcs_time_format`. One can continually
-transform between **Time Format** and **h_ahead Format**. This is
-evidenced by the fact that:
+transform between **Time Format** and **h_ahead Format** without losing
+information. This is evidenced by the fact that: <br/>
 `transform_bytime(forcs_h_ahead_format, slot = "origin") == forcs_time_format`
-and
+<br/> and <br/>
 `transform_byh(forcs_time_format, h_aheads = c(1, 2, 3)) == forcs_h_ahead_format`.
 
 ## convert_byh
@@ -442,15 +406,6 @@ values, the function allows the user to assign `h_ahead` values to the
 converted Forecast objects via the `h_aheads` argument.
 
 ``` r
-convert_byh(forcs_time_format, index = 1L, h_aheads = 1)
-#> h_ahead = 1 
-#> 
-#>       origin     future forecast realized
-#> 1 2010-02-17 2010-06-30     4.27     4.96
-#> 2 2010-05-14 2010-09-30     3.36     4.17
-#> 3 2010-07-22 2010-12-31     4.78     4.26
-#> 4 2010-12-22 2011-03-31     5.45     4.99
- 
 convert_byh(forcs_time_format, index = 1:2, h_aheads = c(1, 2))
 #> [[1]]
 #> h_ahead = 1 
@@ -478,10 +433,10 @@ forecasts to **h_ahead Format** using the `transform_byh()` function.
 This function transforms all Forecast objects in `forcs` to a list of
 **h_ahead Format** Forecast objects that have homogenous `h_ahead`
 values. `h_ahead` values are assigned to each converted Forecast object
-based on the values passed by the user to the `h_aheads` argument. The
-difference between `transform_byh()` and `convert_byh()` is that
-transforming automatically converts all forecasts in the list while
-converting only converts the forecasts specified by the user.
+based on the values passed to the `h_aheads` argument. The difference
+between `transform_byh()` and `convert_byh()` is that transforming
+automatically converts all forecasts in the list while converting only
+converts the forecasts specified by the user.
 
 ``` r
 transform_byh(forcs_time_format, h_aheads = c(1, 2, 3))
@@ -515,10 +470,10 @@ transform_byh(forcs_time_format, h_aheads = c(1, 2, 3))
 
 Note that the output of `transform_byh()` above is identical to the list
 of Forecast objects in `forcs_h_ahead_format`. One can continually
-transform between **Time Format** and **h_ahead Format**. This is
-evidenced by the fact that:
+transform between **Time Format** and **h_ahead Format** without losing
+information. This is evidenced by the fact that: <br/>
 `transform_byh(forcs_time_format, h_aheads = c(1, 2, 3)) == forcs_h_ahead_format`
-and
+<br/> and <br/>
 `transform_bytime(forcs_h_ahead_format, slot = "origin") == forcs_time_format`.
 
 ## Visualization Functions Overview
@@ -527,42 +482,42 @@ and
 source("lmForc_visualize.R")
 ```
 
-When comparing various forecast models, two common strategies are to
-compare forecast accuracy and look at plots of forecasted and realized
-values. However, when comparing multiple forecast models across multiple
+When analyzing forecast models, two common strategies are to compare
+forecast accuracy and look at plots of forecasted and realized values.
+However, when comparing multiple forecast models across multiple
 `h_ahead` forecast horizons, the number of Forecast objects that one has
-to consider can quickly get out of hand and analyzing forecasts can
-become tedious. The following functions are designed to simplify the
-process comparing forecast models.
+to consider can quickly get out of hand and analyzing forecasts becomes
+tedious. The following functions are designed to simplify the process of
+comparing forecast models.
 
 ## accuracy_table
 
-If one is analyzing one forecast model at various `h_ahead` forecast
-horizons, these forecasts can be contained in a list of Forecast objects
-that is in **h_ahead Format**. If the number of forecast models being
-analyzed increases to more than one model, than the process above may be
-repeated and all **h_ahead Format** lists may be combined into a list of
-lists. The index of the outer list refers to the various Forecast models
-and the index of the inner list refers to the `h_ahead` forecast made by
-each model. The `accuracy_table()` function takes this list of list and
-converts it into a data.frame showing forecast accuracy across various
-forecast models and `h_ahead` forecast horizons. The output data.frame
-contains one column for each forecast model and one row for each of the
-forecast horizons that the user passes to the `horizon` argument. Note
-that the order of the Forecast objects in each list matters. If one of
-the integers in the horizon argument is 4, then the function will
-compute the forecast accuracy of each Forecast object at index 4 of the
-inner list and output these values as one row in the output data.frame.
-If the Forecast objects in the inner list are unordered or of
-incomparable length, the output data.frame will not contain fair
-accuracy comparisons. Forecast accuracy is computed based on the
-forecast accuracy function that the users passes to the `metric`
-argument.
+If one is analyzing a single forecast model at various `h_ahead`
+forecast horizons, these forecasts can be contained in a list of
+Forecast objects that is in **h_ahead Format**. If the number of
+forecast models being analyzed increases to more than one model, than
+the process above may be repeated and all **h_ahead Format** lists may
+be combined into a list of lists. The index of the outer list refers to
+the various Forecast models and the index of the inner list refers to
+the `h_ahead` forecast made by each model. The `accuracy_table()`
+function takes this list of list and converts it into a data.frame
+showing forecast accuracy across various forecast models and `h_ahead`
+forecast horizons. The output data.frame contains one column for each
+forecast model and one row for each of the forecast horizons that the
+user passes to the `horizon` argument. Note that the order of the
+Forecast objects in each list matters. If one of the integers in the
+horizon argument is 4, then the function will compute the forecast
+accuracy of each Forecast object at index 4 of the inner list and output
+these values as one row in the output data.frame. If the Forecast
+objects in the inner list are unordered or of incomparable length, the
+output data.frame will not contain fair accuracy comparisons. The
+accuracy of each forecast is computed based on the forecast accuracy
+function that the user passes to the `metric` argument.
 
 Another forecast model `forc2` that consists of an **h_ahead Format**
-forecast list is added below to demonstrate how `accuracy_table()` is
-used to calculate forecast accuracy across multiple forecast models and
-`h_ahead` forecast horizons.
+forecast list is added below to demonstrate how `accuracy_table()` can
+be used to calculate forecast accuracy across multiple forecast models
+and `h_ahead` forecast horizons.
 
 ``` r
 forc2_1h <- Forecast(
@@ -606,13 +561,15 @@ accuracy_table(
 
 ## plot_forc
 
-The `plot_forc` functions allows on or multiple Forecast objects to be
-easily plotted. This functions takes a single Forecast object or a list
-of Forecast objects and returns a ggplot with forecasted and realized
-values on the y-axis and `future` values on the x-axis. The ggplot call
-is returned to the console and the data.frame used to render the ggplot
-may be optionally returned with the `return_df` argument. These features
-allow the user to manually edit the plot afterwards if necessary.
+The `plot_forc()` functions allows one or multiple Forecast objects to
+be easily plotted. This functions takes a single Forecast object or a
+list of Forecast objects and returns a ggplot with forecasted and
+realized values on the y-axis and `future` values on the x-axis. The
+ggplot call is returned to the console and the data.frame used to render
+the ggplot may be optionally returned with the `return_df` argument.
+These features allow the user to manually edit the plot afterwards if
+necessary. `plot_forc()` also supports the alteration of various plot
+aesthetics via arguments such as `labels` and `colors`.
 
 ``` r
 library(ggplot2)
