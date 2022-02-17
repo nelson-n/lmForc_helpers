@@ -7,7 +7,7 @@
 library(lmForc)
 ```
 
-ADD PICTURE HERE
+<img src="imgs/lmForc_helpers.png" style="width:100.0%" />
 
 Assorted functions for working with lmForc Forecast objects. The end
 game is to integrate some of these functions into the lmForc package and
@@ -24,6 +24,20 @@ turn the rest of these functions into a standalone R package.
 #### [subset_identical](#subset_identical-1)
 
 #### [Transformation Functions Overview](#transformation-functions-overview-1)
+
+#### [convert_bytime](#convert_bytime-1)
+
+#### [transform_bytime](#transform_bytime-1)
+
+#### [convert_byh](#convert_byh-1)
+
+#### [transform_byh](#transform_byh-1)
+
+#### [Visualization Functions Overview](#visualization-functions-overview-1)
+
+#### [accuracy_table](#accuracy_table-1)
+
+#### [plot_forc](#plot_forc-1)
 
 ## Subsetting Functions Overview
 
@@ -507,7 +521,7 @@ evidenced by the fact that:
 and
 `transform_bytime(forcs_h_ahead_format, slot = "origin") == forcs_time_format`.
 
-## Helper Functions Overview
+## Visualization Functions Overview
 
 ``` r
 source("lmForc_visualize.R")

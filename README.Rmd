@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 library(lmForc)
 ```
 
-ADD PICTURE HERE
+![](imgs/lmForc_helpers.png){width=100%}
 
 Assorted functions for working with lmForc Forecast objects. The end game is to
 integrate some of these functions into the lmForc package and turn the rest of
@@ -32,6 +32,13 @@ these functions into a standalone R package.
 #### [subset_bytime]
 #### [subset_identical]
 #### [Transformation Functions Overview]
+#### [convert_bytime]
+#### [transform_bytime]
+#### [convert_byh]
+#### [transform_byh]
+#### [Visualization Functions Overview]
+#### [accuracy_table]
+#### [plot_forc]
 
 ## Subsetting Functions Overview
 
@@ -328,7 +335,7 @@ between **Time Format** and **h_ahead Format**. This is evidenced by the fact
 that: `transform_byh(forcs_time_format, h_aheads = c(1, 2, 3)) == forcs_h_ahead_format`
 and `transform_bytime(forcs_h_ahead_format, slot = "origin") == forcs_time_format`.
 
-## Helper Functions Overview
+## Visualization Functions Overview
 
 ```{r example114, message=FALSE}
 source("lmForc_visualize.R")
