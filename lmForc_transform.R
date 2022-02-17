@@ -36,7 +36,7 @@ library(lmForc)
 #' 
 #' forc1_2h <- Forecast(
 #'   origin = as.Date(c("2010-02-17", "2010-05-14", "2010-07-22", "2010-12-22")),
-#'   future = as.Date(c("2010-09-30", "2010-12-31", "2011-03-31", "2012-06-30")),
+#'   future = as.Date(c("2010-09-30", "2010-12-31", "2011-03-31", "2011-06-30")),
 #'   forecast = c(3.77, 3.82, 4.53, 4.89),
 #'   realized = c(4.17, 4.26, 4.99, 5.33),
 #'   h_ahead = 2
@@ -44,7 +44,7 @@ library(lmForc)
 #' 
 #' forc1_3h <- Forecast(
 #'   origin = as.Date(c("2010-02-17", "2010-05-14", "2010-07-22", "2010-12-22")),
-#'   future = as.Date(c("2010-12-31", "2011-03-31", "2012-06-30", "2012-09-30")),
+#'   future = as.Date(c("2010-12-31", "2011-03-31", "2011-06-30", "2011-09-30")),
 #'   forecast = c(3.52, 4.22, 5.03, 5.78),
 #'   realized = c(4.26, 4.99, 5.33, 5.21),
 #'   h_ahead = 3
@@ -142,7 +142,7 @@ convert_bytime <- function(forcs, values, slot) {
 #' 
 #' forc1_2h <- Forecast(
 #'   origin = as.Date(c("2010-02-17", "2010-05-14", "2010-07-22", "2010-12-22")),
-#'   future = as.Date(c("2010-09-30", "2010-12-31", "2011-03-31", "2012-06-30")),
+#'   future = as.Date(c("2010-09-30", "2010-12-31", "2011-03-31", "2011-06-30")),
 #'   forecast = c(3.77, 3.82, 4.53, 4.89),
 #'   realized = c(4.17, 4.26, 4.99, 5.33),
 #'   h_ahead = 2
@@ -150,7 +150,7 @@ convert_bytime <- function(forcs, values, slot) {
 #' 
 #' forc1_3h <- Forecast(
 #'   origin = as.Date(c("2010-02-17", "2010-05-14", "2010-07-22", "2010-12-22")),
-#'   future = as.Date(c("2010-12-31", "2011-03-31", "2012-06-30", "2012-09-30")),
+#'   future = as.Date(c("2010-12-31", "2011-03-31", "2011-06-30", "2011-09-30")),
 #'   forecast = c(3.52, 4.22, 5.03, 5.78),
 #'   realized = c(4.26, 4.99, 5.33, 5.21),
 #'   h_ahead = 3
@@ -217,7 +217,7 @@ transform_bytime <- function(forcs, slot = "future") {
 #' 
 #' forc1_t3 <- Forecast(
 #'   origin = as.Date(c("2010-07-22", "2010-07-22", "2010-07-22")),
-#'   future = as.Date(c("2010-12-31", "2011-03-31", "2012-06-30")),
+#'   future = as.Date(c("2010-12-31", "2011-03-31", "2011-06-30")),
 #'   forecast = c(4.78, 4.53, 5.03),
 #'   realized = c(4.26, 4.99, 5.33),
 #'   h_ahead = NA
@@ -225,7 +225,7 @@ transform_bytime <- function(forcs, slot = "future") {
 #' 
 #' forc1_t4 <- Forecast(
 #'   origin = as.Date(c("2010-12-22", "2010-12-22", "2010-12-22")),
-#'   future = as.Date(c("2011-03-31", "2012-06-30", "2012-09-30")),
+#'   future = as.Date(c("2011-03-31", "2011-06-30", "2011-09-30")),
 #'   forecast = c(5.45, 4.89, 5.78),
 #'   realized = c(4.99, 5.33, 5.21),
 #'   h_ahead = NA
@@ -339,7 +339,7 @@ convert_byh <- function(forcs, index, h_aheads) {
 #' 
 #' forc1_t3 <- Forecast(
 #'   origin = as.Date(c("2010-07-22", "2010-07-22", "2010-07-22")),
-#'   future = as.Date(c("2010-12-31", "2011-03-31", "2012-06-30")),
+#'   future = as.Date(c("2010-12-31", "2011-03-31", "2011-06-30")),
 #'   forecast = c(4.78, 4.53, 5.03),
 #'   realized = c(4.26, 4.99, 5.33),
 #'   h_ahead = NA
@@ -347,13 +347,15 @@ convert_byh <- function(forcs, index, h_aheads) {
 #' 
 #' forc1_t4 <- Forecast(
 #'   origin = as.Date(c("2010-12-22", "2010-12-22", "2010-12-22")),
-#'   future = as.Date(c("2011-03-31", "2012-06-30", "2012-09-30")),
+#'   future = as.Date(c("2011-03-31", "2011-06-30", "2011-09-30")),
 #'   forecast = c(5.45, 4.89, 5.78),
 #'   realized = c(4.99, 5.33, 5.21),
 #'   h_ahead = NA
 #' )
 #' 
-#' transform_byh(forcs, h_aheads = c(1, 2, 3, 4))
+#' forcs <- list(forc1_t1, forc1_t2, forc1_t3, forc1_t4)
+#' 
+#' transform_byh(forcs, h_aheads = c(1, 2, 3))
 #' 
 
 #-------------------------------------------------------------------------------
