@@ -392,7 +392,7 @@ transform between **Time Format** and **h_ahead Format** without losing
 information. This is evidenced by the fact that: <br/>
 `transform_bytime(forcs_h_ahead_format, slot = "origin") == forcs_time_format`
 <br/> and <br/>
-`transform_byh(forcs_time_format, h_aheads = c(1, 2, 3)) == forcs_h_ahead_format`.
+`transform_byh(forcs_time_format, h_aheads = c(1, 2, 3)) == forcs_h_ahead_format`
 
 ## convert_byh
 
@@ -474,7 +474,7 @@ transform between **Time Format** and **h_ahead Format** without losing
 information. This is evidenced by the fact that: <br/>
 `transform_byh(forcs_time_format, h_aheads = c(1, 2, 3)) == forcs_h_ahead_format`
 <br/> and <br/>
-`transform_bytime(forcs_h_ahead_format, slot = "origin") == forcs_time_format`.
+`transform_bytime(forcs_h_ahead_format, slot = "origin") == forcs_time_format`
 
 ## Visualization Functions Overview
 
