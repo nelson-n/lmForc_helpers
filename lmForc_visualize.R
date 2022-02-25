@@ -197,12 +197,14 @@ plot_forc <- function(forcs, labels, colors, xlab, ylab, title = "", caption = "
     lim <- ""
   }
   
-  # Generate plot, return ggplot call to console.
+  # Create ggplot call and print it to console.
   call <- paste(data, geom_lines, aes, lim, collapse = " ")
   cat(call)
-  eval(parse(text = call))
   
+  # Return either ggplot object or data.frame.
   if (return_df == TRUE) {
     return(df)
-  }
+  } else {
+    return(eval(parse(text = call)))
 }
+

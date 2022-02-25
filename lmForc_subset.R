@@ -227,5 +227,5 @@ subset_identical <- function(forcs, slot) {
   values <- Reduce(intersect, lapply(forcs, slot_func))
   values <- slot_func(forcs[[1]])[unclass(slot_func(forcs[[1]])) %in% values]
   subset_bytime(forcs, values, slot)
-  
 }
+
